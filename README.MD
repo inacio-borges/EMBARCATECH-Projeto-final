@@ -42,6 +42,7 @@ Este projeto pode ser adaptado para servir como ferramenta de treinamento cognit
 - **BitdogLab**: Plataforma de desenvolvimento com microcontrolador integrado.
 - **Matriz de LEDs 5x5**: Para exibição das letras "A" e "B".
 - **Dois botões**: Para entrada de dados do jogador.
+
 ```c
 #define OUT_PIN 7 // GPIO conectado a matriz de LEDs endereçáveis
 #define I2C_PORT i2c1 // Definição da porta I2C para o display OLED
@@ -51,6 +52,7 @@ Este projeto pode ser adaptado para servir como ferramenta de treinamento cognit
 #define BOTAO_A 5 // Botão A conectado ao GPIO 5
 #define BOTAO_B 6 // Botão B conectado ao GPIO 6
 ```
+
 ## Software
 - **Linguagem de programação**: C.
 - **Ambiente de desenvolvimento**: VsCode com Pico SDK.
