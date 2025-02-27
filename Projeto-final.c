@@ -43,9 +43,9 @@ double letras[3][25] = {
      1.0, 0.0, 0.0, 0.0, 1.0}, // A
 
     {1.0, 1.0, 1.0, 0.0, 0.0,
-     1.0, 0.0, 0.0, 1.0, 0.0,
+     0.0, 1.0, 0.0, 0.0, 1.0,
      1.0, 1.0, 1.0, 0.0, 0.0,
-     1.0, 0.0, 0.0, 1.0, 0.0,
+     0.0, 1.0, 0.0, 0.0, 1.0,
      1.0, 1.0, 1.0, 0.0, 0.0}, // B
 
     {0.0, 0.0, 0.0, 0.0, 0.0,
@@ -82,6 +82,9 @@ uint32_t matrix_rgb(double r, double g, double b)
 void gpio_callback(uint gpio, uint32_t events)
 {
   gpio_acknowledge_irq(gpio, events); // Garante que a interrupção foi reconhecida
+  printf("%d", resposta);
+  if (!debounce())
+    return;
 
   if (gpio == BOTAO_A)
   {
@@ -163,15 +166,20 @@ int main()
       pio_sm_put_blocking(pio, sm, valor_led);
     }
   }
-
+  char str_tempo_resposta[5];
   while (true)
   {
     resposta = -1;
     printf("Jogo de Resposta Rápida iniciado, aguarde a letra aparecer e precione no botao correspondente.");
 
-    ssd1306_fill(&ssd, false);                                                                        // Limpa o display
-    ssd1306_draw_string(&ssd, "aguarde a letra aparecer e precione no botao correspondente.", 0, 32); // Desenha uma string no OLED
-    ssd1306_send_data(&ssd);                                                                          // Atualiza o display
+    ssd1306_fill(&ssd, false);                          // Limpa o display
+    ssd1306_draw_string(&ssd, "Aguarde a letra", 0, 0); // Desenha uma string no OLED
+    ssd1306_draw_string(&ssd, "aparecer na", 0, 10);    // Desenha uma string no OLED
+    ssd1306_draw_string(&ssd, "Matriz e", 0, 20);       // Desenha uma string no OLED
+    ssd1306_draw_string(&ssd, "pressione", 0, 30);      // Desenha uma string no OLED
+    ssd1306_draw_string(&ssd, "o botao", 0, 40);        // Desenha uma string no OLED
+    ssd1306_draw_string(&ssd, "correspondente", 0, 50); // Desenha uma string no OLED
+    ssd1306_send_data(&ssd);                            // Atualiza o display
 
     Letra = rand() % 2;
 
@@ -193,27 +201,42 @@ int main()
 
     while (resposta == -1)
     {
+      printf("Tempo de espera aleatório: %d ms\n", tempo_espera);
+      printf("valor da letra %d", Letra);
+      tight_loop_contents();
     }
     // Finalizar medição de tempo
     tempo_fim = time_us_64();
-    tempo_resposta = tempo_fim - tempo_inicio;
+    tempo_resposta = (tempo_fim - tempo_inicio) / 1000;
+    sprintf(str_tempo_resposta, "%d", tempo_resposta);
 
     if (resposta == Letra)
     {
       printf("parabens, seu tempo foi de %d ms", tempo_resposta);
 
-      ssd1306_fill(&ssd, false);                                                              // Limpa o display
-      ssd1306_draw_string(&ssd, ("parabens, seu tempo foi de %d ms", tempo_resposta), 0, 32); // Desenha uma string no OLED
-      ssd1306_send_data(&ssd);                                                                // Atualiza o display
+      ssd1306_fill(&ssd, false);                              // Limpa o display
+      ssd1306_draw_string(&ssd, ("PARABENS"), 0, 32);         // Desenha uma string no OLED
+      ssd1306_draw_string(&ssd, ("Seu tempo em ms "), 0, 42); // Desenha uma string no OLED
+      ssd1306_draw_string(&ssd, (str_tempo_resposta), 0, 52); // Desenha uma string no OLED
+      ssd1306_send_data(&ssd);                                // Atualiza o display
     }
     else
     {
       printf("botao errado, tente outra vez");
-      ssd1306_fill(&ssd, false);                                                              // Limpa o display
-      ssd1306_draw_string(&ssd, "botao errado, tente outra vez", 0, 32); // Desenha uma string no OLED
-      ssd1306_send_data(&ssd);                                                                // Atualiza o display
-    
+      ssd1306_fill(&ssd, false);                           // Limpa o display
+      ssd1306_draw_string(&ssd, "Botao errado", 0, 10);    // Desenha uma string no OLED
+      ssd1306_draw_string(&ssd, "Tente outra vez", 0, 20); // Desenha uma string no OLED
+      ssd1306_send_data(&ssd);                             // Atualiza o display
     }
-    sleep_ms(20000);
+
+    for (int i = 0; i < 10; i++)
+    {
+      for (int j = 0; j < NUM_PIXELS; j++)
+      {
+        valor_led = matrix_rgb(b, r = letras[2][24 - j], g);
+        pio_sm_put_blocking(pio, sm, valor_led);
+      }
+    }
+    sleep_ms(10000);
   }
 }
