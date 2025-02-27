@@ -3,7 +3,7 @@
 
 Aluno: Inacio Oliveira Borges
 
-Link para o projeto em execuçao: [link](https:)
+Link para o projeto em execuçao: [link](https://youtu.be/tb0csUjDXew)
 
 ## Introdução
 Este documento descreve o projeto final da residência tecnológica em sistemas embarcados EMBARCATECH, um jogo de resposta rápida implementado no BitdogLab. O jogo testa a agilidade do jogador em identificar e responder a letras exibidas em uma matriz de LEDs 5x5.
